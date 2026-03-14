@@ -3,13 +3,20 @@ trigger: none
 pool:
   name: 'shivalik-pool'
 
-variables:
-  terraformVersion: '1.6.6'
-  azureServiceConnection: 'shivalik-service'
-  backendResourceGroup: 'Chidu-RG'
-  backendStorageAccount: 'eval4adosa'
-  backendContainer: 'demo123'
-  backendKey: 'storagestate.tfstate'
+variables:                                        # ← only ONE variables block
+- group: vmpasswd                                 # ← variable group
+- name: terraformVersion                          # ← inline variables
+  value: '1.6.6'
+- name: azureServiceConnection
+  value: 'shivalik-service'
+- name: backendResourceGroup
+  value: 'Chidu-RG'
+- name: backendStorageAccount
+  value: 'eval4adosa'
+- name: backendContainer
+  value: 'demo123'
+- name: backendKey
+  value: 'demostate.tfstate'
 
 stages:
 
@@ -68,7 +75,7 @@ stages:
         command: 'plan'
         environmentServiceNameAzureRM: $(azureServiceConnection)
         commandOptions: >
-          -var="admin_password=$(vmpasswd)"
+          -var="admin_password=$(vm-password)"
 
 
 - stage: Terraform_Apply
