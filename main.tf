@@ -118,6 +118,18 @@ resource "azurerm_network_interface_security_group_association" "NSG2-NIC2" {
   network_security_group_id = azurerm_network_security_group.nsg2.id
 }
 
+
+# Associate NSG1 to Subnet1
+resource "azurerm_subnet_network_security_group_association" "subnet1_nsg" {
+  subnet_id                 = azurerm_subnet.subnet1.id
+  network_security_group_id = azurerm_network_security_group.nsg1.id
+}
+
+# Associate NSG2 to Subnet2
+resource "azurerm_subnet_network_security_group_association" "subnet2_nsg" {
+  subnet_id                 = azurerm_subnet.subnet2.id
+  network_security_group_id = azurerm_network_security_group.nsg2.id
+}
 # VM 1
 resource "azurerm_linux_virtual_machine" "vm1" {
   name                = "vm-1"
