@@ -79,7 +79,7 @@ resource "azurerm_linux_virtual_machine" "vm1" {
   resource_group_name = azurerm_resource_group.rg.name
   size                = "Standard_D4as_v5"
 
-  admin_username = var.admin_username
+  admin_username = "azureuser"
   admin_password = var.admin_password
 
   disable_password_authentication = false
@@ -108,7 +108,7 @@ resource "azurerm_linux_virtual_machine" "vm2" {
   resource_group_name = azurerm_resource_group.rg.name
   size                = "Standard_D4as_v5"
 
-  admin_username = var.admin_username
+  admin_username = "azureuser"
   admin_password = var.admin_password
 
   disable_password_authentication = false
