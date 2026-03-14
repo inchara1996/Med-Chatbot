@@ -112,4 +112,4 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               environmentServiceNameAzureRM: $(azureServiceConnection)
-              commandOptions: '-auto-approve'
+              commandOptions: '-auto-approve -var="admin_password=$(vm-password)"'
