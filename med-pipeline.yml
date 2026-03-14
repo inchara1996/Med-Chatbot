@@ -1,0 +1,105 @@
+trigger: none
+
+pool:
+  name: 'shivalik-pool'
+
+variables:
+  terraformVersion: '1.6.6'
+  azureServiceConnection: 'shivalik-service'
+  backendResourceGroup: 'Chidu-RG'
+  backendStorageAccount: 'eval4adosa'
+  backendContainer: 'demo123'
+  backendKey: 'storagestate.tfstate'
+
+stages:
+
+- stage: Terraform_Init
+  displayName: Terraform Init
+  jobs:
+  - job: Init
+    steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: $(terraformVersion)
+
+    - task: TerraformTaskV4@4
+      displayName: Terraform Init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: $(azureServiceConnection)
+        backendAzureRmResourceGroupName: $(backendResourceGroup)
+        backendAzureRmStorageAccountName: $(backendStorageAccount)
+        backendAzureRmContainerName: $(backendContainer)
+        backendAzureRmKey: $(backendKey)
+        commandOptions: '-reconfigure'
+
+
+- stage: Terraform_Plan
+  displayName: Terraform Plan
+  dependsOn: Terraform_Init
+  jobs:
+  - job: Plan
+    steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: $(terraformVersion)
+
+    # REQUIRED: init again
+    - task: TerraformTaskV4@4
+      displayName: Terraform Init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: $(azureServiceConnection)
+        backendAzureRmResourceGroupName: $(backendResourceGroup)
+        backendAzureRmStorageAccountName: $(backendStorageAccount)
+        backendAzureRmContainerName: $(backendContainer)
+        backendAzureRmKey: $(backendKey)
+        commandOptions: '-reconfigure'
+
+    - task: TerraformTaskV4@4
+      displayName: Terraform Plan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        environmentServiceNameAzureRM: $(azureServiceConnection)
+
+
+- stage: Terraform_Apply
+  displayName: Terraform Apply
+  dependsOn: Terraform_Plan
+  jobs:
+  - deployment: Apply
+    environment: inch-tf-apply
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: TerraformInstaller@1
+            displayName: Install Terraform
+            inputs:
+              terraformVersion: $(terraformVersion)
+
+          # REQUIRED: init again
+          - task: TerraformTaskV4@4
+            displayName: Terraform Init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: $(azureServiceConnection)
+              backendAzureRmResourceGroupName: $(backendResourceGroup)
+              backendAzureRmStorageAccountName: $(backendStorageAccount)
+              backendAzureRmContainerName: $(backendContainer)
+              backendAzureRmKey: $(backendKey)
+              commandOptions: '-reconfigure'
+
+          - task: TerraformTaskV4@4
+            displayName: Terraform Apply
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              environmentServiceNameAzureRM: $(azureServiceConnection)
+              commandOptions: '-auto-approve'
