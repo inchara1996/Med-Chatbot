@@ -77,7 +77,7 @@ resource "azurerm_linux_virtual_machine" "vm1" {
   name                = "vm-1"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  size                = "Standard_D4as_v5"
+  size                = "Standard_D2as_v5"
 
   admin_username = "azureuser"
   admin_password = var.admin_password
@@ -106,7 +106,7 @@ resource "azurerm_linux_virtual_machine" "vm2" {
   name                = "vm-2"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  size                = "Standard_D4as_v5"
+  size                = "Standard_D2ads_v5"
 
   admin_username = "azureuser"
   admin_password = var.admin_password
