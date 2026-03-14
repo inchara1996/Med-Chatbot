@@ -44,6 +44,42 @@ resource "azurerm_public_ip" "pip2" {
   sku                 = "Standard"
 }
 
+# NSG 1
+resource "azurerm_network_security_group" "nsg1" {
+  name                = "shivalik-nsg1"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "allow-ssh"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_network_security_group" "nsg2" {
+  name                = "shivalik-nsg2"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "allow-ssh"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
 # NIC 1
 resource "azurerm_network_interface" "nic1" {
   name                = "vm1-nic"
@@ -70,6 +106,16 @@ resource "azurerm_network_interface" "nic2" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.pip2.id
   }
+}
+
+resource "azurerm_network_interface_security_group_association" "NSG1-NIC1" {
+  network_interface_id      = azurerm_network_interface.nic1.id
+  network_security_group_id = azurerm_network_security_group.nsg1.id
+}
+
+resource "azurerm_network_interface_security_group_association" "NSG2-NIC2" {
+  network_interface_id      = azurerm_network_interface.nic2.id
+  network_security_group_id = azurerm_network_security_group.nsg2.id
 }
 
 # VM 1
