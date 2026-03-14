@@ -59,6 +59,7 @@ stages:
         backendAzureRmContainerName: $(backendContainer)
         backendAzureRmKey: $(backendKey)
         commandOptions: '-reconfigure'
+          
 
     - task: TerraformTaskV4@4
       displayName: Terraform Plan
@@ -66,6 +67,8 @@ stages:
         provider: 'azurerm'
         command: 'plan'
         environmentServiceNameAzureRM: $(azureServiceConnection)
+        commandOptions: >
+          -var="admin_password=$(vmpasswd)"
 
 
 - stage: Terraform_Apply
